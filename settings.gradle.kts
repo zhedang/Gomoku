@@ -1,4 +1,7 @@
 pluginManagement {
+    plugins {
+        id("org.jetbrains.kotlin.plugin.serialization") version "1.6.3"
+    }
     repositories {
         google {
             content {

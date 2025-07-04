@@ -48,8 +48,6 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-
 @Composable
 fun GameScreen(
     gameState: GameState,
@@ -70,10 +68,11 @@ fun GameScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Chessboard(
             chessPieces = gameState.chessPieces,
-            onTap = { x, y -> onIntent(GameIntent.PlacePiece(x, y)) }
+            onTap = { x, y -> onIntent(GameIntent.PlacePiece(x, y)) },
+            isClickable = !gameState.isAiThinking && gameState.winner == null && !gameState.isDraw
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = { onIntent(GameIntent.ResetGame) }) {
+        Button(onClick = { onIntent(GameIntent.ResetGame) }, enabled = !gameState.isAiThinking) {
             Text(text = "Reset Game")
         }
     }
@@ -82,6 +81,7 @@ fun GameScreen(
 @Composable
 private fun getStatusText(gameState: GameState): String {
     return when {
+        gameState.isAiThinking -> "AI is thinking..."
         gameState.winner != null -> {
             val winnerName = if (gameState.winner == Color.Black) "Black" else "White"
             "$winnerName wins!"
@@ -98,14 +98,15 @@ private fun getStatusText(gameState: GameState): String {
 fun Chessboard(
     chessPieces: List<ChessPiece>,
     onTap: (Int, Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isClickable: Boolean = true
 ) {
     val boardSize = GameViewModel.BOARD_SIZE
     Canvas(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(1f)
-            .pointerInput(Unit) {
+            .then(if (isClickable) Modifier.pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val gridSize = size.width / (boardSize - 1)
                     val x = (offset.x / gridSize).roundToInt()
@@ -115,7 +116,7 @@ fun Chessboard(
                         onTap(x, y)
                     }
                 }
-            }
+            } else Modifier)
     ) {
         val gridSize = size.width / (boardSize - 1)
 
