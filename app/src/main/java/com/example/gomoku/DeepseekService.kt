@@ -39,7 +39,7 @@ class DeepseekService {
 
     companion object {
         private const val BASE_URL = "https://api.deepseek.com/v1"
-        private const val API_KEY = "sk-30c5a7c6017f44769d0fdfbb6f0eb418" // Replace with your actual DeepSeek API Key
+        // API key disabled for privacy
     }
 }
 
